@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>gateway-sdk | LLM Observability & Reliability Gateway</title>
+  <meta name="description"
+    content="Real-time LLM observability: semantic caching, distributed tracing, canary A/B analytics, error rate alerts, and payload logging." />
+  <link rel="icon" type="image/png" href="/static/favicon.png?v=10" />
+  <link rel="shortcut icon" type="image/png" href="/static/favicon.png?v=10" />
+  <link rel="apple-touch-icon" href="/static/favicon.png?v=10" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"
+    rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <link rel="stylesheet" href="/static/style.css?v=4" />
+</head>
+
+
+<body>
+  <!-- ── Top Navigation Bar ────────────────────────────────────────────────── -->
+  <header class="header">
+    <div class="header-inner">
+      <div class="logo">
+        <div class="logo-badge">
+          <img src="/static/favicon.png?v=10" alt="gateway-sdk logo" style="width:26px; height:26px; object-fit:contain; display:block;" />
+        </div>
+        <div class="logo-title">
+          <span class="logo-text">gateway<span class="logo-accent">-sdk</span></span>
+          <span class="logo-tag">LLM Observability & Gateway</span>
+        </div>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <nav class="nav-tabs">
+        <button class="nav-btn active" data-tab="overview" onclick="switchTab('overview')">
+          <span class="nav-icon">📊</span> Overview
+        </button>
+        <button class="nav-btn" data-tab="logs" onclick="switchTab('logs')">
+          <span class="nav-icon">📜</span> Request Logs
+        </button>
+        <button class="nav-btn" data-tab="traces" onclick="switchTab('traces')">
+          <span class="nav-icon">🔀</span> Traces <span class="tab-badge" id="traceBadge">0</span>
+        </button>
+        <button class="nav-btn" data-tab="canary" onclick="switchTab('canary')">
+          <span class="nav-icon">🐤</span> Canary A/B
+        </button>
+      </nav>
+
+      <div class="header-right">
+        <div class="live-status">
+          <span class="live-dot" id="liveDot"></span>
+          <span class="live-label">LIVE</span>
+        </div>
+        <button class="btn-refresh" onclick="refreshAll()" title="Refresh now">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67" />
+          </svg>
+        </button>
+        <span class="last-refresh" id="lastRefresh">—</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="main">
+
+    <!-- ─────────────────────────────────────────────────────────────────────── -->
+    <!-- TAB 1: OVERVIEW                                                         -->
+    <!-- ─────────────────────────────────────────────────────────────────────── -->
+    <div class="tab-content active" id="tab-overview">
+      <!-- Summary KPI Cards -->
+      <section class="cards-grid" id="statsCards">
+        <div class="card card--primary">
+          <div class="card-icon">📊</div>
+          <div class="card-body">
+            <div class="card-value" id="totalCalls">—</div>
+            <div class="card-label">Total Requests</div>
+            <div class="card-sub" id="totalCallsSub">Across all functions</div>
+          </div>
+        </div>
+        <div class="card card--green">
+          <div class="card-icon">⚡</div>
+          <div class="card-body">
+            <div class="card-value" id="hitRate">—</div>
+            <div class="card-label">Cache Hit Rate</div>
+            <div class="card-sub" id="hitSub">— hits / — misses</div>
+          </div>
+        </div>
+        <div class="card card--blue">
+          <div class="card-icon">⏱</div>
+          <div class="card-body">
+            <div class="card-value" id="avgLatency">—</div>
+            <div class="card-label">Avg Latency (miss)</div>
+            <div class="card-sub" id="latencySub">Live LLM calls</div>
+          </div>
+        </div>
+        <div class="card card--amber">
+          <div class="card-icon">💰</div>
+          <div class="card-body">
+            <div class="card-value" id="totalCost">—</div>
+            <div class="card-label">Est. Total Cost</div>
+            <div class="card-sub" id="costSavedSub">Semantic cache savings</div>
+          </div>
+        </div>
+        <div class="card card--red">
+          <div class="card-icon">⚠️</div>
+          <div class="card-body">
+            <div class="card-value" id="errorRate">—</div>
+            <div class="card-label">Error Rate</div>
+            <div class="card-sub" id="errorSub">— errors</div>
+          </div>
+        </div>
+        <div class="card card--purple">
+          <div class="card-icon">🗄</div>
+          <div class="card-body">
+            <div class="card-value" id="cacheEntries">—</div>
+            <div class="card-label">Cached Entries</div>
+            <div class="card-sub" id="cacheSub">{{ backend_label }}</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Charts Section -->
+      <section class="charts-grid">
+        <div class="chart-card">
+          <div class="chart-header">
+            <div>
+              <h2 class="chart-title">Cache Hit Rate Trend</h2>
+              <p class="chart-subtitle">Hit percentage aggregated in 5-minute buckets</p>
+            </div>
+            <span class="chart-badge">5-min resolution</span>
+          </div>
+          <div class="chart-wrapper">
+            <canvas id="hitRateChart"></canvas>
+          </div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-header">
+            <div>
+              <h2 class="chart-title">Avg Latency Trend (ms)</h2>
+              <p class="chart-subtitle">Execution latency for cache miss LLM requests</p>
+            </div>
+            <span class="chart-badge">miss calls</span>
+          </div>
+          <div class="chart-wrapper">
+            <canvas id="latencyChart"></canvas>
+          </div>
+        </div>
+      </section>
+
+      <!-- Quick Recent Activity Preview -->
+      <section class="section-container">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title">Recent Activity</h2>
+            <p class="section-subtitle">Latest LLM calls monitored by gateway-sdk</p>
+          </div>
+          <button class="btn-secondary" onclick="switchTab('logs')">View All Logs →</button>
+        </div>
+        <div class="table-wrapper">
+          <table class="log-table">
+            <thead>
+              <tr>
+                <th>Time</th>
+                <th>Function</th>
+                <th>Status / Cache</th>
+                <th>Latency</th>
+                <th>Cost</th>
+                <th>Prompt</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="overviewLogBody">
+              <tr>
+                <td colspan="7" class="loading">Loading live activity…</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+
+
+    <!-- ─────────────────────────────────────────────────────────────────────── -->
+    <!-- TAB 2: REQUEST LOGS                                                     -->
+    <!-- ─────────────────────────────────────────────────────────────────────── -->
+    <div class="tab-content" id="tab-logs">
+      <section class="section-container">
+        <div class="section-header search-header">
+          <div>
+            <h2 class="section-title">Request Logs & Payloads</h2>
+            <p class="section-subtitle">Detailed execution history with prompt/response inspection</p>
+          </div>
+          <div class="filter-controls">
+            <div class="search-box">
+              <span class="search-icon">🔍</span>
+              <input type="text" id="logSearchInput" placeholder="Filter by prompt, function, response..."
+                oninput="filterLogs()" />
+            </div>
+            <select id="statusFilter" class="select-control" onchange="filterLogs()">
+              <option value="all">All Requests</option>
+              <option value="hit">Cache Hits</option>
+              <option value="miss">Cache Misses</option>
+              <option value="error">Errors Only</option>
+            </select>
+          </div>
+        </div>
+        <div class="table-wrapper">
+          <table class="log-table">
+            <thead>
+              <tr>
+                <th>Timestamp</th>
+                <th>Function Name</th>
+                <th>Cache / Status</th>
+                <th>Latency</th>
+                <th>Cost</th>
+                <th>Variant</th>
+                <th>Prompt</th>
+                <th>Response</th>
+                <th>Inspect</th>
+              </tr>
+            </thead>
+            <tbody id="fullLogBody">
+              <tr>
+                <td colspan="9" class="loading">Loading logs…</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+
+
+    <!-- ─────────────────────────────────────────────────────────────────────── -->
+    <!-- TAB 3: DISTRIBUTED TRACES                                               -->
+    <!-- ─────────────────────────────────────────────────────────────────────── -->
+    <div class="tab-content" id="tab-traces">
+      <section class="section-container">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title">Distributed Traces</h2>
+            <p class="section-subtitle">Multi-span agent chains and execution waterfall views</p>
+          </div>
+          <div class="search-box">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="traceSearchInput" placeholder="Filter traces by Trace ID or function..."
+              oninput="renderTraces()" />
+          </div>
+        </div>
+        <div id="tracesListContainer" class="traces-container">
+          <div class="loading">Loading distributed traces…</div>
+        </div>
+      </section>
+    </div>
+
+
+    <!-- ─────────────────────────────────────────────────────────────────────── -->
+    <!-- TAB 4: CANARY A/B TESTING                                               -->
+    <!-- ─────────────────────────────────────────────────────────────────────── -->
+    <div class="tab-content" id="tab-canary">
+      <section class="section-container">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title">Canary & A/B Experimentation</h2>
+            <p class="section-subtitle">Comparative latency, cost, and error analytics across model variants</p>
+          </div>
+        </div>
+
+        <div class="canary-grid" id="canaryVariantCards">
+          <div class="loading">Loading canary stats…</div>
+        </div>
+
+        <div class="charts-grid" style="margin-top: 24px;">
+          <div class="chart-card">
+            <div class="chart-header">
+              <div>
+                <h2 class="chart-title">Avg Latency Comparison (ms)</h2>
+                <p class="chart-subtitle">Primary vs Canary performance breakdown</p>
+              </div>
+            </div>
+            <div class="chart-wrapper">
+              <canvas id="canaryLatencyChart"></canvas>
+            </div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-header">
+              <div>
+                <h2 class="chart-title">Cost Breakdown (USD)</h2>
+                <p class="chart-subtitle">Cumulative cost incurred per variant</p>
+              </div>
+            </div>
+            <div class="chart-wrapper">
+              <canvas id="canaryCostChart"></canvas>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+  </main>
+
+  <!-- ── Payload Inspector Modal ───────────────────────────────────────────── -->
+  <div class="modal-backdrop" id="payloadModal" onclick="closeModal(event)">
+    <div class="modal-card" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <span class="modal-icon">🔍</span>
+          <div>
+            <h3 class="modal-title" id="modalFunctionName">Function Details</h3>
+            <span class="modal-subtitle" id="modalTimestamp">—</span>
+          </div>
+        </div>
+        <button class="modal-close" onclick="closeModal()">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="modal-meta-grid">
+          <div class="meta-item">
+            <span class="meta-label">Cache Status</span>
+            <span id="modalCacheStatus">—</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Execution Latency</span>
+            <span class="meta-val" id="modalLatency">—</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Cost Estimate</span>
+            <span class="meta-val" id="modalCost">—</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Variant Tag</span>
+            <span class="meta-val" id="modalVariant">—</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Trace ID</span>
+            <span class="meta-val code-text" id="modalTraceId">—</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Span ID</span>
+            <span class="meta-val code-text" id="modalSpanId">—</span>
+          </div>
+        </div>
+
+        <div class="modal-code-block">
+          <div class="code-block-header">
+            <span>Prompt Payload</span>
+            <button class="btn-copy" onclick="copyModalText('modalPromptText')">Copy</button>
+          </div>
+          <pre class="code-block-body" id="modalPromptText">—</pre>
+        </div>
+
+        <div class="modal-code-block" style="margin-top: 16px;">
+          <div class="code-block-header">
+            <span>LLM Response Output</span>
+            <button class="btn-copy" onclick="copyModalText('modalResponseText')">Copy</button>
+          </div>
+          <pre class="code-block-body" id="modalResponseText">—</pre>
+        </div>
+
+        <div class="modal-code-block error-block" id="modalErrorContainer" style="display:none; margin-top:16px;">
+          <div class="code-block-header error-header">
+            <span>Error Traceback</span>
+          </div>
+          <pre class="code-block-body error-text" id="modalErrorText">—</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/static/charts.js?v=4"></script>
+</body>
+
+</html>

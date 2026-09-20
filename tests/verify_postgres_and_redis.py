@@ -196,7 +196,7 @@ def test_e2e_decorator_integration():
 
 def main():
     print(f"{'═' * 70}")
-    print("  GATEWAY-SDK DUAL BACKEND VERIFICATION (POSTGRESQL + REDIS)")
+    print("  LENSLLM DUAL BACKEND VERIFICATION (POSTGRESQL + REDIS)")
     print(f"{'═' * 70}")
 
     pg_ok = test_postgresql_connection()

@@ -27,8 +27,8 @@ def main():
 
 
 @main.command()
-@click.option("--port", default=None, type=int, help="Dashboard port (default: 8080)")
-@click.option("--db", default=None, help="Path to SQLite database file")
+@click.option("-p", "--port", default=None, type=int, help="Dashboard port (default: 8080)")
+@click.option("-d", "--db", default=None, help="Path to SQLite database file")
 def serve(port: int | None, db: str | None):
     """Launch the local observability dashboard."""
     import uvicorn

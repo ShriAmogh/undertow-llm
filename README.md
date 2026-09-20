@@ -62,7 +62,13 @@ Start the live observability dashboard in one command:
 undertow-llm serve
 ```
 
-Open `http://localhost:8080` to inspect real-time metrics, cache hit ratios, latency charts, cost estimates, distributed traces, and request logs.
+Optionally specify a custom port using `--port` / `-p` (default: `8080`):
+
+```bash
+undertow-llm serve -p 9090
+```
+
+Open `http://localhost:8080` (or your custom port) to inspect real-time metrics, cache hit ratios, latency charts, cost estimates, distributed traces, and request logs.
 
 ---
 
@@ -73,7 +79,7 @@ Open `http://localhost:8080` to inspect real-time metrics, cache hit ratios, lat
 3. Upon function completion, it records latency, token usage, estimated cost, and execution traces to storage.
 4. It is provider-agnostic because it wraps your Python function call directly and never touches your underlying model SDK.
 
-For a detailed architectural breakdown of the 8-stage execution pipeline and backend dispatcher, see [ARCHITECTURE.md](ARCHITECTURE.md).
+For a detailed architectural breakdown of the 8-stage execution pipeline and backend dispatcher, see [ARCHITECTURE.md](https://github.com/ShriAmogh/undertow-llm/blob/main/ARCHITECTURE.md).
 
 ---
 
@@ -122,7 +128,7 @@ For production environments, configure via environment variables or `configure()
 
 ## Examples
 
-See [`demo/example_usage.py`](demo/example_usage.py) for complete runnable examples.
+See [`demo/example_usage.py`](https://github.com/ShriAmogh/undertow-llm/blob/main/demo/example_usage.py) for complete runnable examples.
 
 ### 1. Multi-Provider Fallback Chain
 ```python
@@ -171,10 +177,10 @@ def ask_ollama(prompt: str) -> dict:
 
 ## Contributing
 
-Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for developer setup instructions.
+Contributions are welcome! Please see [CONTRIBUTING.md](https://github.com/ShriAmogh/undertow-llm/blob/main/CONTRIBUTING.md) for developer setup instructions.
 
 ---
 
 ## License
 
-MIT — see [LICENSE](LICENSE)
+MIT — see [LICENSE](https://github.com/ShriAmogh/undertow-llm/blob/main/LICENSE)

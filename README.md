@@ -90,16 +90,28 @@ For a detailed architectural breakdown of the 8-stage execution pipeline and bac
 
 ## Configuration
 
-**Local dev needs zero config** — defaults out-of-the-box to local SQLite (`undertow_llm.db`).
+**Local dev needs zero config** — defaults out-of-the-box to local SQLite (`undertow-llm.db`).
 
 For production environments, configure via environment variables or `configure()`:
 
 | Environment Variable | Default | Description |
 |----------------------|---------|-------------|
-| `UNDERTOW_LLM_POSTGRES_URL` | `None` (SQLite) | PostgreSQL URL with `pgvector` for production vector storage & metrics |
-| `UNDERTOW_LLM_REDIS_URL` | `None` (Local) | Redis URL for distributed rate limiting & token buckets |
+| `UNDERTOW_LLM_POSTGRES_URL` / `POSTGRES_URL` | `None` (SQLite) | PostgreSQL URL with `pgvector` for production vector storage & metrics |
+| `UNDERTOW_LLM_REDIS_URL` / `REDIS_URL` | `None` (Local) | Redis URL for distributed rate limiting & token buckets |
 | `UNDERTOW_LLM_DB_PATH` | `"undertow-llm.db"` | File path for local SQLite database fallback |
 | `UNDERTOW_LLM_DASHBOARD_PORT` | `8080` | HTTP port for `undertow-llm serve` dashboard |
+
+### Environment Setup (`.env`)
+
+```env
+# Production Storage (Optional - use if you want Postgres + pgvector for cache & metrics, Redis for rate limits)
+# Else it uses local SQLite
+POSTGRES_URL=postgresql://postgres:postgres@localhost:5432/undertow_db
+REDIS_URL=redis://localhost:6379
+
+# Dashboard Port(Optional)
+UNDERTOW_LLM_DASHBOARD_PORT=8080
+```
 
 ---
 

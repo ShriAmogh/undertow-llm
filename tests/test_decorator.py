@@ -6,8 +6,8 @@ Phase 2 tests (cache + logging) will be added when Phase 2 is implemented.
 """
 
 import pytest
-from gateway_sdk import track
-from gateway_sdk.config import configure, get_config
+from lensllm import track
+from lensllm.config import configure, get_config
 
 
 class TestDecoratorPhase1:
@@ -76,7 +76,7 @@ class TestConfig:
         assert cfg.retries == 5
 
     def test_configure_rejects_unknown_keys(self, temp_db):
-        with pytest.raises(ValueError, match="Unknown gateway-sdk config key"):
+        with pytest.raises(ValueError, match="Unknown lensllm config key"):
             configure(nonexistent_key="value")
 
     def test_per_call_threshold_overrides_global(self, temp_db):
@@ -131,7 +131,7 @@ class TestDecoratorPhase2:
 
     def test_log_written_on_miss(self, temp_db, mock_llm):
         """A request_logs entry must be created for every miss."""
-        from gateway_sdk.logging.store import LogStore
+        from lensllm.logging.store import LogStore
         tracked = track(cache=True)(mock_llm)
         tracked("Python question")
 
@@ -142,7 +142,7 @@ class TestDecoratorPhase2:
 
     def test_log_written_on_hit(self, temp_db, mock_llm):
         """A request_logs entry must be created for cache hits too."""
-        from gateway_sdk.logging.store import LogStore
+        from lensllm.logging.store import LogStore
         tracked = track(cache=True, similarity_threshold=0.99)(mock_llm)
         tracked("Python question")  # miss
         tracked("Python question")  # hit
@@ -165,7 +165,7 @@ class TestDecoratorPhase2:
 
     def test_cost_per_call_override(self, temp_db):
         """cost_per_call parameter should override auto token-estimate cost."""
-        from gateway_sdk.logging.store import LogStore
+        from lensllm.logging.store import LogStore
         @track(cache=False, cost_per_call=0.0015)
         def custom_priced_fn(prompt: str) -> str:
             return "custom priced response"

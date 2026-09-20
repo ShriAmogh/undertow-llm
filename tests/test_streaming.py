@@ -1,11 +1,11 @@
 """
 tests/test_streaming.py
 =======================
-Unit tests for gateway_sdk.streaming (Phase 5).
+Unit tests for lensllm.streaming (Phase 5).
 """
 import time
 import pytest
-from gateway_sdk.streaming import is_generator, wrap_stream
+from lensllm.streaming import is_generator, wrap_stream
 
 
 # ── is_generator ─────────────────────────────────────────────────────────────

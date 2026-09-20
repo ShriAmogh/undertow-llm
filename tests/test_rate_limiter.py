@@ -12,8 +12,8 @@ import threading
 import time
 import pytest
 
-from gateway_sdk.rate_limiter import TokenBucketLimiter, get_limiter
-from gateway_sdk.queue import RequestQueue, get_queue
+from lensllm.rate_limiter import TokenBucketLimiter, get_limiter
+from lensllm.queue import RequestQueue, get_queue
 
 
 # ── TokenBucketLimiter ────────────────────────────────────────────────────────

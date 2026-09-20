@@ -23,9 +23,9 @@ except ImportError:
 
 
 POSTGRES_URL = (
-    os.getenv("GATEWAY_SDK_POSTGRES_URL")
+    os.getenv("LENSLLM_POSTGRES_URL")
     or os.getenv("POSTGRES_URL")
-    or "postgresql://gateway:gateway@localhost:5432/gateway"
+    or "postgresql://lensllm:lensllm@localhost:5432/gateway"
 )
 
 

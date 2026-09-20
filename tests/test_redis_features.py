@@ -9,10 +9,10 @@ and concurrency slots.
 import os
 import time
 import pytest
-from gateway_sdk.rate_limiter import RedisTokenBucketLimiter, get_limiter
-from gateway_sdk.queue import RedisRequestQueue, get_queue
+from lensllm.rate_limiter import RedisTokenBucketLimiter, get_limiter
+from lensllm.queue import RedisRequestQueue, get_queue
 
-REDIS_TEST_URL = os.getenv("GATEWAY_SDK_REDIS_URL", "redis://localhost:6379")
+REDIS_TEST_URL = os.getenv("LENSLLM_REDIS_URL", "redis://localhost:6379")
 
 
 @pytest.fixture
@@ -54,7 +54,7 @@ def test_redis_request_queue_atomic_concurrency(redis_client):
 
 
 def test_redis_factory_dispatching(redis_client, monkeypatch):
-    monkeypatch.setenv("GATEWAY_SDK_REDIS_URL", REDIS_TEST_URL)
+    monkeypatch.setenv("LENSLLM_REDIS_URL", REDIS_TEST_URL)
 
     limiter = get_limiter(rate=2.0, max_tokens=5.0)
     assert isinstance(limiter, RedisTokenBucketLimiter)
@@ -68,7 +68,7 @@ def test_redis_contains_no_metrics_or_cache_data(redis_client):
     Verify architectural constraint: Redis is NEVER used for metric logs or
     vector cache entries (which belong exclusively in Postgres).
     """
-    keys = redis_client.keys("gateway_sdk:*")
+    keys = redis_client.keys("lensllm:*")
     # All keys in Redis must belong only to ratelimit or queue domains
     for k in keys:
         assert ("ratelimit" in k or "queue" in k or "test" in k), f"Unexpected key domain in Redis: {k}"

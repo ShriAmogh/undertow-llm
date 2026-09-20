@@ -1,7 +1,7 @@
 """
 tests/conftest.py
 =================
-Shared pytest fixtures for the gateway-sdk test suite.
+Shared pytest fixtures for the lensllm test suite.
 
 Fixtures available to all tests (no import needed — pytest discovers conftest.py):
     temp_db        — in-memory SQLite DB path (isolated per test)
@@ -13,8 +13,8 @@ import pytest
 import tempfile
 import os
 
-from gateway_sdk.db import init_db
-from gateway_sdk.config import configure
+from lensllm.db import init_db
+from lensllm.config import configure
 
 
 @pytest.fixture
@@ -26,9 +26,9 @@ def temp_db(tmp_path, monkeypatch):
     directory per test — no test can pollute another's database.
     """
     monkeypatch.delenv("POSTGRES_URL", raising=False)
-    monkeypatch.delenv("GATEWAY_SDK_POSTGRES_URL", raising=False)
-    db_path = str(tmp_path / "test_gateway.db")
-    from gateway_sdk.backends.factory import reset_backends
+    monkeypatch.delenv("LENSLLM_POSTGRES_URL", raising=False)
+    db_path = str(tmp_path / "test_lensllm.db")
+    from lensllm.backends.factory import reset_backends
     reset_backends()
     # Point global config at this temp DB
     configure(db_path=db_path, postgres_url=None)

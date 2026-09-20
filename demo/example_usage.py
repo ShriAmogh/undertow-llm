@@ -1,9 +1,9 @@
 """
 example_usage.py
 ================
-How a developer uses gateway-sdk in 3 steps:
+How a developer uses lensllm in 3 steps:
 
-    1. pip install gateway-sdk
+    1. pip install lensllm
     2. Add @track() above your LLM function
     3. Run — automatic management of:
 
@@ -37,7 +37,7 @@ warnings.filterwarnings("ignore")
 load_dotenv()
 
 # ── Step 1: Import and configure the SDK globally ────────────────────────────
-from gateway_sdk import track, configure, PolicyViolationError, get_last_call_info
+from lensllm import track, configure, PolicyViolationError, get_last_call_info
 
 configure(
     # ── Cache ─────────────────────────────────────────────────────────────────
@@ -140,7 +140,7 @@ def _banner(title: str):
 
 
 if __name__ == "__main__":
-    print("\n📦  gateway-sdk — Feature Demo")
+    print("\n📦  lensllm — Feature Demo")
     print("    Active parameters in @track():")
     print("    cache · similarity_threshold · cache_ttl · retries · base_delay ·")
     print("    max_delay · jitter · retry_on · fallback · rate_limit_rate ·")
@@ -188,7 +188,7 @@ if __name__ == "__main__":
     def step_two(prompt: str) -> str:
         return _call_gemini_raw(prompt)
 
-    from gateway_sdk.tracing import set_current_trace, reset_current_trace
+    from lensllm.tracing import set_current_trace, reset_current_trace
     import uuid
     shared_trace = str(uuid.uuid4())
     tok = set_current_trace(shared_trace, str(uuid.uuid4()))
@@ -207,6 +207,6 @@ if __name__ == "__main__":
 
     # ── Done ──────────────────────────────────────────────────────────────────
     print("✅  Done. Open the dashboard to see all logs, traces, and canary stats:")
-    print("     gateway-sdk serve  →  http://localhost:8080")
+    print("     lensllm serve  →  http://localhost:8080")
     print("     /api/traces        →  distributed trace view")
     print("     /api/canary        →  primary vs canary A-B comparison\n")

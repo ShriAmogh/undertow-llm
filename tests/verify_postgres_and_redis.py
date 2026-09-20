@@ -2,7 +2,7 @@
 verify_postgres_and_redis.py
 ============================
 Verification script to test and demonstrate simultaneous PostgreSQL (pgvector)
-and Redis operations for gateway-sdk.
+and Redis operations for lensllm.
 
 Usage:
     python verify_postgres_and_redis.py
@@ -19,12 +19,12 @@ load_dotenv()
 
 # Environment settings
 POSTGRES_URL = (
-    os.getenv("GATEWAY_SDK_POSTGRES_URL")
+    os.getenv("LENSLLM_POSTGRES_URL")
     or os.getenv("POSTGRES_URL")
-    or "postgresql://gateway:gateway@localhost:5432/gateway"
+    or "postgresql://lensllm:lensllm@localhost:5432/gateway"
 )
 REDIS_URL = (
-    os.getenv("GATEWAY_SDK_REDIS_URL")
+    os.getenv("LENSLLM_REDIS_URL")
     or os.getenv("REDIS_URL")
     or "redis://localhost:6379"
 )
@@ -68,7 +68,7 @@ def test_postgresql_connection():
             print("  ✅ pgvector extension enabled successfully.")
 
         # Test Postgres Cache Backend
-        from gateway_sdk.backends.postgres_backend import PostgresCacheBackend, PostgresMetricsStore
+        from lensllm.backends.postgres_backend import PostgresCacheBackend, PostgresMetricsStore
 
         cache_store = PostgresCacheBackend(POSTGRES_URL)
         metrics_store = PostgresMetricsStore(POSTGRES_URL)
@@ -126,7 +126,7 @@ def test_redis_connection():
         return False
 
     # Test rate limiter counter key in Redis
-    test_key = f"gateway_sdk:test_counter:{uuid.uuid4().hex[:6]}"
+    test_key = f"lensllm:test_counter:{uuid.uuid4().hex[:6]}"
     r.set(test_key, 10, ex=60)
     val = r.get(test_key)
     print(f"  ✅ Redis Set/Get Verification: Key '{test_key}' = {val}")
@@ -143,9 +143,9 @@ def test_e2e_decorator_integration():
     """Verify @track() decorator with live PostgreSQL and Redis backends."""
     print_banner("3. End-to-End @track Decorator Integration (Postgres + Redis)")
 
-    from gateway_sdk.config import configure, get_config
-    from gateway_sdk.backends.factory import get_cache_backend, get_metrics_store, reset_backends
-    from gateway_sdk.decorator import track, get_last_call_info
+    from lensllm.config import configure, get_config
+    from lensllm.backends.factory import get_cache_backend, get_metrics_store, reset_backends
+    from lensllm.decorator import track, get_last_call_info
 
     reset_backends()
     configure(

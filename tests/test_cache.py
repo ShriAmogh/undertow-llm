@@ -15,8 +15,8 @@ import numpy as np
 import pytest
 from unittest.mock import patch, MagicMock
 
-from gateway_sdk.cache.semantic import cosine_similarity, embedding_to_bytes, bytes_to_embedding
-from gateway_sdk.cache.store import CacheStore
+from lensllm.cache.semantic import cosine_similarity, embedding_to_bytes, bytes_to_embedding
+from lensllm.cache.store import CacheStore
 
 
 # ── Fixtures ──────────────────────────────────────────────────────────────────

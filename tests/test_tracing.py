@@ -1,11 +1,11 @@
 """
 tests/test_tracing.py
 =====================
-Unit tests for gateway_sdk.tracing (Phase 7).
+Unit tests for lensllm.tracing (Phase 7).
 """
 import threading
 import pytest
-from gateway_sdk.tracing import (
+from lensllm.tracing import (
     get_current_trace,
     set_current_trace,
     reset_current_trace,

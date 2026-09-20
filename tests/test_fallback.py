@@ -7,7 +7,7 @@ Phase 3 tests: FallbackChain behaviour.
 from __future__ import annotations
 
 import pytest
-from gateway_sdk.fallback import FallbackChain, FallbackResult
+from lensllm.fallback import FallbackChain, FallbackResult
 
 
 # ── Helpers ───────────────────────────────────────────────────────────────────

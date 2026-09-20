@@ -1,10 +1,10 @@
 """
 tests/test_canary.py
 ====================
-Unit tests for gateway_sdk.canary (Phase 9).
+Unit tests for lensllm.canary (Phase 9).
 """
 import pytest
-from gateway_sdk.canary import parse_canary, should_use_canary, CanaryConfig
+from lensllm.canary import parse_canary, should_use_canary, CanaryConfig
 
 
 # ── should_use_canary ─────────────────────────────────────────────────────────
@@ -68,7 +68,7 @@ def test_parse_canary_non_callable_fn():
 
 def test_decorator_always_routes_to_canary(temp_db):
     """With weight=1.0 canary, the canary function must be called instead of primary."""
-    from gateway_sdk.decorator import track
+    from lensllm.decorator import track
 
     primary_calls = []
     canary_calls = []
@@ -86,7 +86,7 @@ def test_decorator_always_routes_to_canary(temp_db):
 
 def test_decorator_never_routes_to_canary(temp_db):
     """With weight=0.0, primary function must always be called."""
-    from gateway_sdk.decorator import track
+    from lensllm.decorator import track
 
     canary_calls = []
 
@@ -101,8 +101,8 @@ def test_decorator_never_routes_to_canary(temp_db):
 
 def test_variant_tagging_in_log(temp_db):
     """Canary calls must have variant='canary' in request_logs."""
-    from gateway_sdk.decorator import track
-    from gateway_sdk.logging.store import LogStore
+    from lensllm.decorator import track
+    from lensllm.logging.store import LogStore
 
     @track(cache=False, retries=0, canary={"fn": lambda p: "canary_resp", "weight": 1.0})
     def primary(prompt):

@@ -11,14 +11,14 @@ import uuid
 import pytest
 import numpy as np
 
-from gateway_sdk.backends.postgres_backend import PostgresCacheBackend, PostgresMetricsStore
-from gateway_sdk.backends.factory import get_cache_backend, get_metrics_store, reset_backends
-from gateway_sdk.logging.store import LogEntry
-from gateway_sdk.decorator import track, get_last_call_info
+from lensllm.backends.postgres_backend import PostgresCacheBackend, PostgresMetricsStore
+from lensllm.backends.factory import get_cache_backend, get_metrics_store, reset_backends
+from lensllm.logging.store import LogEntry
+from lensllm.decorator import track, get_last_call_info
 
 POSTGRES_TEST_URL = os.getenv(
-    "GATEWAY_SDK_POSTGRES_URL",
-    "postgresql://gateway:gateway@localhost:5432/gateway"
+    "LENSLLM_POSTGRES_URL",
+    "postgresql://lensllm:lensllm@localhost:5432/gateway"
 )
 
 
@@ -34,12 +34,12 @@ def postgres_client():
 
 @pytest.fixture
 def setup_postgres_env(postgres_client, monkeypatch):
-    monkeypatch.setenv("GATEWAY_SDK_POSTGRES_URL", POSTGRES_TEST_URL)
-    from gateway_sdk.config import configure
+    monkeypatch.setenv("LENSLLM_POSTGRES_URL", POSTGRES_TEST_URL)
+    from lensllm.config import configure
     configure(postgres_url=POSTGRES_TEST_URL)
     reset_backends()
     yield
-    monkeypatch.delenv("GATEWAY_SDK_POSTGRES_URL", raising=False)
+    monkeypatch.delenv("LENSLLM_POSTGRES_URL", raising=False)
     monkeypatch.delenv("POSTGRES_URL", raising=False)
     configure(postgres_url=None)
     reset_backends()

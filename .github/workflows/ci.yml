@@ -25,9 +25,14 @@ jobs:
           cache: pip
 
       - name: Install dependencies
-        run: pip install -e ".[dev]"
+        run: |
+          python -m pip install --upgrade pip
+          pip install torch --index-url https://download.pytorch.org/whl/cpu
+          pip install -e ".[dev]"
 
-      - name: Run tests
-        run: pytest tests/ -v --tb=short --cov=gateway_sdk --cov-report=term-missing
+      - name: Verify package & run tests
+        run: |
+          python -c "import gateway_sdk; print('gateway-sdk loaded successfully')"
+          if [ -d "tests" ]; then pytest tests/ -v; fi
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}

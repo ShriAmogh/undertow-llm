@@ -2,16 +2,16 @@
 
 **Wrap any LLM call, get caching, retries, rate limiting, and a real-time dashboard — with zero code changes to your model.**
 
-[![PyPI version](https://img.shields.io/pypi/v/lensllm)](https://pypi.org/project/lensllm/)
-[![Python](https://img.shields.io/pypi/pyversions/lensllm)](https://pypi.org/project/lensllm/)
-[![Build Status](https://img.shields.io/github/actions/workflow/status/amogharora/lensllm/ci.yml?branch=main)](https://github.com/amogharora/lensllm/actions)
+[![PyPI version](https://img.shields.io/pypi/v/lensllm.svg)](https://pypi.org/project/lensllm/)
+[![Python versions](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12-blue.svg)](https://pypi.org/project/lensllm/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Status](https://img.shields.io/badge/status-active-brightgreen.svg)](https://pypi.org/project/lensllm/)
 
 ---
 
 ## Problem Statement
 
-Without an observability and resilience layer, LLM applications suffer from soaring API costs due to redundant prompt calls, unexpected provider outages with zero fallback resilience, and complete lack of visibility into latency and errors. `lensllm` solves this by wrapping your existing Python LLM functions in a single decorator—providing semantic caching, automated retries, rate limiting, and a live dashboard without modifying your model logic.
+Without an observability and resilience layer, production LLM applications suffer from soaring API costs due to redundant prompt calls, unexpected provider outages with zero fallback protection, and complete lack of visibility into latency and errors. `lensllm` solves this by wrapping your existing Python LLM functions in a single decorator—providing semantic caching, automated retries, rate limiting, and a live dashboard without modifying your model logic.
 
 ---
 
@@ -21,13 +21,23 @@ Without an observability and resilience layer, LLM applications suffer from soar
 pip install lensllm
 ```
 
+Or install with provider & production backend extras:
+
+```bash
+pip install "lensllm[gemini]"    # Google Gemini support
+pip install "lensllm[ollama]"    # Ollama local model support
+pip install "lensllm[postgres]"  # PostgreSQL + pgvector backend
+pip install "lensllm[redis]"     # Redis rate-limiting backend
+pip install "lensllm[prod]"      # Production stack (Postgres + Redis)
+```
+
 ---
 
 ## Quickstart
 
 **Before** (bare LLM call — no caching, no fallback, no observability):
 ```python
-def generate_text(prompt: str) -> str:
+def generate_response(prompt: str) -> str:
     return client.models.generate_content("gemini-2.5-flash", prompt).text
 ```
 
@@ -36,7 +46,7 @@ def generate_text(prompt: str) -> str:
 from lensllm import track
 
 @track(cache=True, retries=3, rate_limit_rate=2.0)
-def generate_text(prompt: str) -> str:
+def generate_response(prompt: str) -> str:
     return client.models.generate_content("gemini-2.5-flash", prompt).text
 ```
 
@@ -44,7 +54,7 @@ Copy-paste into your application and run. Zero edits required except setting you
 
 ---
 
-## Dashboard
+## Real-Time Dashboard
 
 Start the live observability dashboard in one command:
 
@@ -52,16 +62,14 @@ Start the live observability dashboard in one command:
 lensllm serve
 ```
 
-Open `http://localhost:8080` to inspect real-time metrics, cache hit ratios, latency charts, cost estimates, and request logs.
-
-![lensllm Dashboard Preview](https://raw.githubusercontent.com/amogharora/lensllm/main/docs/dashboard_preview.png)
+Open `http://localhost:8080` to inspect real-time metrics, cache hit ratios, latency charts, cost estimates, distributed traces, and request logs.
 
 ---
 
 ## How It Works
 
 1. The `@track()` decorator wraps your function, intercepting incoming prompts before execution.
-2. It performs a vector similarity search to serve semantic cache hits instantly and applies token-bucket rate limits.
+2. It performs a vector similarity search (using `SentenceTransformers`) to serve semantic cache hits instantly and applies token-bucket rate limits.
 3. Upon function completion, it records latency, token usage, estimated cost, and execution traces to storage.
 4. It is provider-agnostic because it wraps your Python function call directly and never touches your underlying model SDK.
 
@@ -73,7 +81,7 @@ For a detailed architectural breakdown of the 8-stage execution pipeline and bac
 
 **Local dev needs zero config** — defaults out-of-the-box to local SQLite (`lensllm.db`).
 
-For production environments, configure via environment variables:
+For production environments, configure via environment variables or `configure()`:
 
 | Environment Variable | Default | Description |
 |----------------------|---------|-------------|
@@ -163,14 +171,7 @@ def ask_ollama(prompt: str) -> dict:
 
 ## Contributing
 
-Contributions are welcome! Please run unit tests before submitting pull requests:
-
-```bash
-pip install -e ".[dev]"
-pytest tests/ -v
-```
-
-See [CONTRIBUTING.md](CONTRIBUTING.md) for full developer details.
+Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for developer setup instructions.
 
 ---
 

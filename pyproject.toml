@@ -4,12 +4,21 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "lensllm"
-version = "0.2.0"
+version = "0.2.1"
 description = "Provider-agnostic LLM observability & reliability SDK — semantic caching, retries, rate limiting, cost tracking, and a local dashboard via a single @track() decorator."
 readme = "README.md"
 requires-python = ">=3.10"
 license = "MIT"
 keywords = ["llm", "observability", "caching", "openai", "gemini", "anthropic", "sdk", "ai-infra"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
 authors = [{ name = "Amogh Arora" }]
 dependencies = [
     # Semantic cache

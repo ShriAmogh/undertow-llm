@@ -9,15 +9,39 @@ description = "Provider-agnostic LLM observability & reliability SDK — semanti
 readme = "README.md"
 requires-python = ">=3.10"
 license = "MIT"
-keywords = ["llm", "observability", "caching", "openai", "gemini", "anthropic", "sdk", "ai-infra"]
+keywords = [
+    "llm",
+    "llm-observability",
+    "llm-monitoring",
+    "semantic-caching",
+    "llm-cache",
+    "rate-limiting",
+    "llm-retries",
+    "fallback-chain",
+    "openai",
+    "gemini",
+    "anthropic",
+    "ollama",
+    "ai-infrastructure",
+    "prompt-caching",
+    "cost-tracking",
+    "distributed-tracing",
+    "pgvector",
+    "redis",
+    "fastapi",
+    "python-sdk",
+]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
+    "Intended Audience :: Information Technology",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
     "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: System :: Monitoring",
 ]
 authors = [{ name = "Amogh Arora" }]
 dependencies = [

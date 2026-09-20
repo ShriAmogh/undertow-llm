@@ -10,6 +10,8 @@
 
 **Repository**: [https://github.com/ShriAmogh/undertow-llm](https://github.com/ShriAmogh/undertow-llm)
 
+`llm-observability` · `semantic-caching` · `rate-limiting` · `exponential-backoff` · `fallback-chain` · `cost-tracking` · `distributed-tracing` · `openai` · `gemini` · `anthropic` · `ollama` · `pgvector` · `redis`
+
 ---
 
 ## Problem Statement

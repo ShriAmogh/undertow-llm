@@ -1,11 +1,14 @@
-# undertow_llm
+# undertow-llm
 
 **Wrap any LLM call, get caching, retries, rate limiting, and a real-time dashboard — with zero code changes to your model.**
 
-[![PyPI version](https://img.shields.io/pypi/v/undertow_llm.svg)](https://pypi.org/project/undertow_llm/)
-[![Python versions](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12-blue.svg)](https://pypi.org/project/undertow_llm/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Status](https://img.shields.io/badge/status-active-brightgreen.svg)](https://pypi.org/project/undertow_llm/)
+[![PyPI version](https://img.shields.io/pypi/v/undertow-llm.svg)](https://pypi.org/project/undertow-llm/)
+[![Python versions](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12-blue.svg)](https://pypi.org/project/undertow-llm/)
+[![GitHub Repository](https://img.shields.io/badge/GitHub-ShriAmogh%2Fundertow--llm-blue?logo=github)](https://github.com/ShriAmogh/undertow-llm)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/ShriAmogh/undertow-llm/blob/main/LICENSE)
+[![Status](https://img.shields.io/badge/status-active-brightgreen.svg)](https://pypi.org/project/undertow-llm/)
+
+**Repository**: [https://github.com/ShriAmogh/undertow-llm](https://github.com/ShriAmogh/undertow-llm)
 
 ---
 

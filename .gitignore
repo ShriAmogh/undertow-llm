@@ -19,6 +19,7 @@ env/
 .env
 .env.local
 .env.*.local
+docker-compose.yml
 
 # Database files & SQLite WAL
 *.db

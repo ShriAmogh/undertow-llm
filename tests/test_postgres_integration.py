@@ -23,7 +23,17 @@ POSTGRES_TEST_URL = os.getenv(
 
 
 @pytest.fixture
-def setup_postgres_env(monkeypatch):
+def postgres_client():
+    try:
+        import psycopg2
+        conn = psycopg2.connect(POSTGRES_TEST_URL)
+        conn.close()
+    except Exception:
+        pytest.skip("PostgreSQL server unavailable for testing")
+
+
+@pytest.fixture
+def setup_postgres_env(postgres_client, monkeypatch):
     monkeypatch.setenv("GATEWAY_SDK_POSTGRES_URL", POSTGRES_TEST_URL)
     from gateway_sdk.config import configure
     configure(postgres_url=POSTGRES_TEST_URL)
@@ -35,7 +45,7 @@ def setup_postgres_env(monkeypatch):
     reset_backends()
 
 
-def test_postgres_cache_backend_vector_similarity():
+def test_postgres_cache_backend_vector_similarity(postgres_client):
     cache = PostgresCacheBackend(POSTGRES_TEST_URL)
 
     # Generate 384-dim normalized vector
@@ -69,7 +79,7 @@ def test_postgres_cache_backend_vector_similarity():
     assert miss is None
 
 
-def test_postgres_metrics_store_full_suite():
+def test_postgres_metrics_store_full_suite(postgres_client):
     store = PostgresMetricsStore(POSTGRES_TEST_URL)
     trace_id = f"trace-pg-{int(time.time())}"
     span_id = f"span-pg-{int(time.time())}"

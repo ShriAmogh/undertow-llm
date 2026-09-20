@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "undertow-llm"
 version = "0.2.4"
-description = "Provider-agnostic LLM observability & reliability SDK — semantic caching, retries, rate limiting, cost tracking, and a local dashboard via a single @track() decorator."
+description = "LLM observability and resilience decorator — semantic prompt caching, automatic retries, rate limiting, cost tracking, and a local web dashboard for any Python LLM call."
 readme = "README.md"
 requires-python = ">=3.10"
 license = "MIT"

@@ -1,6 +1,6 @@
 # undertow-llm
 
-**Wrap any LLM call, get caching, retries, rate limiting, and a real-time dashboard — with zero code changes to your model.**
+**Wrap any LLM call, get caching, retries, rate limiting, and a real-time dashboard, with zero code changes to your model.**
 
 [![PyPI version](https://img.shields.io/pypi/v/undertow-llm.svg)](https://pypi.org/project/undertow-llm/)
 [![Python versions](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12-blue.svg)](https://pypi.org/project/undertow-llm/)
@@ -14,19 +14,21 @@
 
 ---
 
-## Problem Statement
+## Why undertow-llm?
 
-Without an observability and resilience layer, production LLM applications suffer from soaring API costs due to redundant prompt calls, unexpected provider outages with zero fallback protection, and complete lack of visibility into latency and errors. `undertow_llm` solves this by wrapping your existing Python LLM functions in a single decorator—providing semantic caching, automated retries, rate limiting, and a live dashboard without modifying your model logic.
+Calling LLM APIs in production usually means handling 429 rate limits, transient 500 server errors, duplicate prompt billing, and zero visibility into latency or costs.
+
+Instead of writing custom retry loops and cache wrappers for every provider SDK, `undertow-llm` wraps any Python LLM function with a single `@track()` decorator. You get semantic prompt caching, automated retries, rate limiting, and a local web dashboard without modifying your underlying model calls.
 
 ---
 
-## Install
+## Installation
 
 ```bash
 pip install undertow-llm
 ```
 
-Or install with provider & production backend extras:
+Optional extras for specific providers or production backends:
 
 ```bash
 pip install "undertow-llm[gemini]"    # Google Gemini support
@@ -55,7 +57,7 @@ def generate_response(prompt: str) -> str:
     return client.models.generate_content("gemini-2.5-flash", prompt).text
 ```
 
-Copy-paste into your application and run. Zero edits required except setting your provider API key.
+No refactoring needed, your function returns its original response while `undertow-llm` handles caching, retries, and background logging automatically.
 
 ---
 
@@ -79,12 +81,14 @@ Open `http://localhost:8080` (or your custom port) to inspect real-time metrics,
 
 ## How It Works
 
-1. The `@track()` decorator wraps your function, intercepting incoming prompts before execution.
-2. It performs a vector similarity search (using `SentenceTransformers`) to serve semantic cache hits instantly and applies token-bucket rate limits.
-3. Upon function completion, it records latency, token usage, estimated cost, and execution traces to storage.
-4. It is provider-agnostic because it wraps your Python function call directly and never touches your underlying model SDK.
+When a function wrapped with `@track()` is invoked:
 
-For a detailed architectural breakdown of the 8-stage execution pipeline and backend dispatcher, see [ARCHITECTURE.md](https://github.com/ShriAmogh/undertow-llm/blob/main/ARCHITECTURE.md).
+1. **Semantic Cache Check**: Computes prompt vector embeddings (`SentenceTransformers`). If a semantically similar prompt exists in storage (above `similarity_threshold`), it returns the cached response in ~15ms with zero API cost.
+2. **Rate Limiting**: Enforces token-bucket rates and max concurrency to prevent 429 quota breaches.
+3. **Retries & Fallbacks**: If the primary API call raises a transient error, it retries using exponential backoff with jitter. If all retries fail, it executes any configured fallback functions.
+4. **Metrics & Logging**: Records call duration, token counts, cost estimates, and trace spans to SQLite (or Postgres + Redis in production).
+
+For a deep dive into the 8-stage execution pipeline, see [ARCHITECTURE.md](https://github.com/ShriAmogh/undertow-llm/blob/main/ARCHITECTURE.md).
 
 ---
 
@@ -103,9 +107,10 @@ For production environments, configure via environment variables or `configure()
 
 ### Environment Setup (`.env`)
 
+Copy [.env.example](https://github.com/ShriAmogh/undertow-llm/blob/main/.env.example) to your project `.env` file to enable PostgreSQL and Redis backends:
+
 ```env
-# Production Storage (Optional - use if you want Postgres + pgvector for cache & metrics, Redis for rate limits)
-# Else it uses local SQLite
+# Production Storage (Postgres + pgvector for cache & metrics, Redis for rate limits)
 POSTGRES_URL=postgresql://postgres:postgres@localhost:5432/undertow_db
 REDIS_URL=redis://localhost:6379
 
@@ -139,7 +144,7 @@ UNDERTOW_LLM_DASHBOARD_PORT=8080
 
 ## Supported Providers
 
-`undertow_llm` works with **any provider** — OpenAI, Anthropic, Google Gemini, Ollama, HuggingFace, or custom local models — since it wraps your existing Python function call rather than a specific provider SDK.
+`undertow_llm` works with **any provider** -  OpenAI, Anthropic, Google Gemini, Ollama, HuggingFace, or custom local models — since it wraps your existing Python function call rather than a specific provider SDK.
 
 ---
 
@@ -183,18 +188,14 @@ def ask_ollama(prompt: str) -> dict:
 ## Known Limitations & Roadmap
 
 ### Limitations
-- **SQLite Concurrency**: Local SQLite storage (`undertow_llm.db`) is zero-config and ideal for development and single-instance apps, but is not designed for multi-node production scale. For high concurrency, set `UNDERTOW_LLM_POSTGRES_URL` and `UNDERTOW_LLM_REDIS_URL`.
+- **SQLite Concurrency**: Local SQLite storage (`undertow-llm.db`) is zero-config for development, but high concurrency multi-node deployments require setting `POSTGRES_URL` and `REDIS_URL`.
 
-### Near-Term Roadmap
-- [ ] OpenTelemetry trace exporter integration
-- [ ] Multi-tenant workspace tagging & dashboard authentication
-- [ ] Automated PII redaction and sensitive prompt masking filters
 
 ---
 
 ## Contributing
 
-Contributions are welcome! Please see [CONTRIBUTING.md](https://github.com/ShriAmogh/undertow-llm/blob/main/CONTRIBUTING.md) for developer setup instructions.
+Contributions are welcome! See [CONTRIBUTING.md](https://github.com/ShriAmogh/undertow-llm/blob/main/CONTRIBUTING.md) for developer setup details.
 
 ---
 

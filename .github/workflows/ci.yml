@@ -30,9 +30,7 @@ jobs:
           pip install torch --index-url https://download.pytorch.org/whl/cpu
           pip install -e ".[dev]"
 
-      - name: Verify package & run tests
-        run: |
-          python -c "import gateway_sdk; print('gateway-sdk loaded successfully')"
-          if [ -d "tests" ]; then pytest tests/ -v; fi
+      - name: Run test suite
+        run: pytest tests/ -v --tb=short
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}

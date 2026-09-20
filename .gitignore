@@ -45,7 +45,6 @@ env/
 .coverage
 .coverage.*
 htmlcov/
-tests/
 
 skill.md
 track_decorator_info.md

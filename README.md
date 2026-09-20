@@ -163,11 +163,11 @@ def ask_ollama(prompt: str) -> dict:
 
 ## Contributing
 
-Contributions are welcome!
+Contributions are welcome! Please run unit tests before submitting pull requests:
 
 ```bash
 pip install -e ".[dev]"
-python demo/example_usage.py
+pytest tests/ -v
 ```
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for full developer details.

@@ -1,13 +1,13 @@
-# Contributing to gateway-sdk
+# Contributing to lensllm
 
-Thank you for your interest in contributing to `gateway-sdk`!
+Thank you for your interest in contributing to `lensllm`!
 
 ## Quickstart for Developers
 
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/amogharora/gateway-sdk.git
-   cd gateway-sdk
+   git clone https://github.com/amogharora/lensllm.git
+   cd lensllm
    ```
 
 2. **Set up a virtual environment**:

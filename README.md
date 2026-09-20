@@ -1,24 +1,24 @@
-# gateway-sdk
+# lensllm
 
 **Wrap any LLM call, get caching, retries, rate limiting, and a real-time dashboard — with zero code changes to your model.**
 
-[![PyPI version](https://img.shields.io/pypi/v/gateway-sdk)](https://pypi.org/project/gateway-sdk/)
-[![Python](https://img.shields.io/pypi/pyversions/gateway-sdk)](https://pypi.org/project/gateway-sdk/)
-[![Build Status](https://img.shields.io/github/actions/workflow/status/amogharora/gateway-sdk/ci.yml?branch=main)](https://github.com/amogharora/gateway-sdk/actions)
+[![PyPI version](https://img.shields.io/pypi/v/lensllm)](https://pypi.org/project/lensllm/)
+[![Python](https://img.shields.io/pypi/pyversions/lensllm)](https://pypi.org/project/lensllm/)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/amogharora/lensllm/ci.yml?branch=main)](https://github.com/amogharora/lensllm/actions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 ---
 
 ## Problem Statement
 
-Without an observability and resilience layer, LLM applications suffer from soaring API costs due to redundant prompt calls, unexpected provider outages with zero fallback resilience, and complete lack of visibility into latency and errors. `gateway-sdk` solves this by wrapping your existing Python LLM functions in a single decorator—providing semantic caching, automated retries, rate limiting, and a live dashboard without modifying your model logic.
+Without an observability and resilience layer, LLM applications suffer from soaring API costs due to redundant prompt calls, unexpected provider outages with zero fallback resilience, and complete lack of visibility into latency and errors. `lensllm` solves this by wrapping your existing Python LLM functions in a single decorator—providing semantic caching, automated retries, rate limiting, and a live dashboard without modifying your model logic.
 
 ---
 
 ## Install
 
 ```bash
-pip install gateway-sdk
+pip install lensllm
 ```
 
 ---
@@ -33,7 +33,7 @@ def generate_text(prompt: str) -> str:
 
 **After** (wrapped with `@track()` — fully resilient & tracked):
 ```python
-from gateway_sdk import track
+from lensllm import track
 
 @track(cache=True, retries=3, rate_limit_rate=2.0)
 def generate_text(prompt: str) -> str:
@@ -49,12 +49,12 @@ Copy-paste into your application and run. Zero edits required except setting you
 Start the live observability dashboard in one command:
 
 ```bash
-gateway-sdk serve
+lensllm serve
 ```
 
 Open `http://localhost:8080` to inspect real-time metrics, cache hit ratios, latency charts, cost estimates, and request logs.
 
-![gateway-sdk Dashboard Preview](https://raw.githubusercontent.com/amogharora/gateway-sdk/main/docs/dashboard_preview.png)
+![lensllm Dashboard Preview](https://raw.githubusercontent.com/amogharora/lensllm/main/docs/dashboard_preview.png)
 
 ---
 
@@ -71,16 +71,16 @@ For a detailed architectural breakdown of the 8-stage execution pipeline and bac
 
 ## Configuration
 
-**Local dev needs zero config** — defaults out-of-the-box to local SQLite (`gateway.db`).
+**Local dev needs zero config** — defaults out-of-the-box to local SQLite (`lensllm.db`).
 
 For production environments, configure via environment variables:
 
 | Environment Variable | Default | Description |
 |----------------------|---------|-------------|
-| `GATEWAY_SDK_POSTGRES_URL` | `None` (SQLite) | PostgreSQL URL with `pgvector` for production vector storage & metrics |
-| `GATEWAY_SDK_REDIS_URL` | `None` (Local) | Redis URL for distributed rate limiting & token buckets |
-| `GATEWAY_DB_PATH` | `"gateway.db"` | File path for local SQLite database fallback |
-| `GATEWAY_DASHBOARD_PORT` | `8080` | HTTP port for `gateway-sdk serve` dashboard |
+| `LENSLLM_POSTGRES_URL` | `None` (SQLite) | PostgreSQL URL with `pgvector` for production vector storage & metrics |
+| `LENSLLM_REDIS_URL` | `None` (Local) | Redis URL for distributed rate limiting & token buckets |
+| `LENSLLM_DB_PATH` | `"lensllm.db"` | File path for local SQLite database fallback |
+| `LENSLLM_DASHBOARD_PORT` | `8080` | HTTP port for `lensllm serve` dashboard |
 
 ---
 
@@ -108,7 +108,7 @@ For production environments, configure via environment variables:
 
 ## Supported Providers
 
-`gateway-sdk` works with **any provider** — OpenAI, Anthropic, Google Gemini, Ollama, HuggingFace, or custom local models — since it wraps your existing Python function call rather than a specific provider SDK.
+`lensllm` works with **any provider** — OpenAI, Anthropic, Google Gemini, Ollama, HuggingFace, or custom local models — since it wraps your existing Python function call rather than a specific provider SDK.
 
 ---
 
@@ -118,7 +118,7 @@ See [`demo/example_usage.py`](demo/example_usage.py) for complete runnable examp
 
 ### 1. Multi-Provider Fallback Chain
 ```python
-from gateway_sdk import track
+from lensllm import track
 
 def fallback_anthropic(prompt: str) -> str:
     return anthropic_client.messages.create(model="claude-3-5-sonnet", messages=[{"role": "user", "content": prompt}]).content[0].text
@@ -152,7 +152,7 @@ def ask_ollama(prompt: str) -> dict:
 ## Known Limitations & Roadmap
 
 ### Limitations
-- **SQLite Concurrency**: Local SQLite storage (`gateway.db`) is zero-config and ideal for development and single-instance apps, but is not designed for multi-node production scale. For high concurrency, set `GATEWAY_SDK_POSTGRES_URL` and `GATEWAY_SDK_REDIS_URL`.
+- **SQLite Concurrency**: Local SQLite storage (`lensllm.db`) is zero-config and ideal for development and single-instance apps, but is not designed for multi-node production scale. For high concurrency, set `LENSLLM_POSTGRES_URL` and `LENSLLM_REDIS_URL`.
 
 ### Near-Term Roadmap
 - [ ] OpenTelemetry trace exporter integration

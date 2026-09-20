@@ -1,0 +1,53 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg
+*.egg-info/
+dist/
+build/
+*.whl
+
+# Virtual environment
+.venv/
+venv/
+ENV/
+env/
+
+# Environment variables (secrets)
+.env
+.env.local
+.env.*.local
+
+# Database files & SQLite WAL
+*.db
+*.db-shm
+*.db-wal
+*.sqlite
+*.sqlite3
+
+# Sentence-transformers / HuggingFace model cache
+.cache/
+~/.cache/huggingface/
+
+# IDE / OS
+.DS_Store
+.vscode/
+.idea/
+*.swp
+
+# Logs
+*.log
+
+# Pytest & Coverage
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+tests/
+
+skill.md
+track_decorator_info.md
+package_info.md
+PROJECT_IMPLEMENTATION_SUMMARY.md

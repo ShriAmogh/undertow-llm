@@ -1,5 +1,5 @@
 /**
- * undertow_llm Dashboard — charts.js
+ * undertow-llm Dashboard — charts.js
  * Comprehensive Frontend Application for LLM Observability & Reliability.
  * Handles tab navigation, real-time polling, Chart.js charts, interactive log filtering,
  * distributed trace waterfall rendering, canary A/B analytics, and alert logging.

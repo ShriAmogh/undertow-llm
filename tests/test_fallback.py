@@ -7,7 +7,7 @@ Phase 3 tests: FallbackChain behaviour.
 from __future__ import annotations
 
 import pytest
-from lensllm.fallback import FallbackChain, FallbackResult
+from undertow_llm.fallback import FallbackChain, FallbackResult
 
 
 # ── Helpers ───────────────────────────────────────────────────────────────────

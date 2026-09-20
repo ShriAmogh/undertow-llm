@@ -12,8 +12,8 @@ import threading
 import time
 import pytest
 
-from lensllm.rate_limiter import TokenBucketLimiter, get_limiter
-from lensllm.queue import RequestQueue, get_queue
+from undertow_llm.rate_limiter import TokenBucketLimiter, get_limiter
+from undertow_llm.queue import RequestQueue, get_queue
 
 
 # ── TokenBucketLimiter ────────────────────────────────────────────────────────

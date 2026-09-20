@@ -1,13 +1,13 @@
-# Contributing to lensllm
+# Contributing to undertow_llm
 
-Thank you for your interest in contributing to `lensllm`!
+Thank you for your interest in contributing to `undertow_llm`!
 
 ## Quickstart for Developers
 
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/amogharora/lensllm.git
-   cd lensllm
+   git clone https://github.com/amogharora/undertow_llm.git
+   cd undertow_llm
    ```
 
 2. **Set up a virtual environment**:

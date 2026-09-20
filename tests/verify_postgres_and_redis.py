@@ -2,7 +2,7 @@
 verify_postgres_and_redis.py
 ============================
 Verification script to test and demonstrate simultaneous PostgreSQL (pgvector)
-and Redis operations for lensllm.
+and Redis operations for undertow_llm.
 
 Usage:
     python verify_postgres_and_redis.py
@@ -19,12 +19,12 @@ load_dotenv()
 
 # Environment settings
 POSTGRES_URL = (
-    os.getenv("LENSLLM_POSTGRES_URL")
+    os.getenv("UNDERTOW_LLM_POSTGRES_URL")
     or os.getenv("POSTGRES_URL")
-    or "postgresql://lensllm:lensllm@localhost:5432/gateway"
+    or "postgresql://undertow_llm:undertow_llm@localhost:5432/gateway"
 )
 REDIS_URL = (
-    os.getenv("LENSLLM_REDIS_URL")
+    os.getenv("UNDERTOW_LLM_REDIS_URL")
     or os.getenv("REDIS_URL")
     or "redis://localhost:6379"
 )
@@ -68,7 +68,7 @@ def test_postgresql_connection():
             print("  ✅ pgvector extension enabled successfully.")
 
         # Test Postgres Cache Backend
-        from lensllm.backends.postgres_backend import PostgresCacheBackend, PostgresMetricsStore
+        from undertow_llm.backends.postgres_backend import PostgresCacheBackend, PostgresMetricsStore
 
         cache_store = PostgresCacheBackend(POSTGRES_URL)
         metrics_store = PostgresMetricsStore(POSTGRES_URL)
@@ -126,7 +126,7 @@ def test_redis_connection():
         return False
 
     # Test rate limiter counter key in Redis
-    test_key = f"lensllm:test_counter:{uuid.uuid4().hex[:6]}"
+    test_key = f"undertow-llm:test_counter:{uuid.uuid4().hex[:6]}"
     r.set(test_key, 10, ex=60)
     val = r.get(test_key)
     print(f"  ✅ Redis Set/Get Verification: Key '{test_key}' = {val}")
@@ -143,9 +143,9 @@ def test_e2e_decorator_integration():
     """Verify @track() decorator with live PostgreSQL and Redis backends."""
     print_banner("3. End-to-End @track Decorator Integration (Postgres + Redis)")
 
-    from lensllm.config import configure, get_config
-    from lensllm.backends.factory import get_cache_backend, get_metrics_store, reset_backends
-    from lensllm.decorator import track, get_last_call_info
+    from undertow_llm.config import configure, get_config
+    from undertow_llm.backends.factory import get_cache_backend, get_metrics_store, reset_backends
+    from undertow_llm.decorator import track, get_last_call_info
 
     reset_backends()
     configure(
@@ -196,7 +196,7 @@ def test_e2e_decorator_integration():
 
 def main():
     print(f"{'═' * 70}")
-    print("  LENSLLM DUAL BACKEND VERIFICATION (POSTGRESQL + REDIS)")
+    print("  UNDERTOW_LLM DUAL BACKEND VERIFICATION (POSTGRESQL + REDIS)")
     print(f"{'═' * 70}")
 
     pg_ok = test_postgresql_connection()

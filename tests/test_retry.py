@@ -13,7 +13,7 @@ from __future__ import annotations
 import pytest
 from unittest.mock import patch, call, MagicMock
 
-from lensllm.retry import retry_with_backoff, compute_delay, DEFAULT_RETRY_ON
+from undertow_llm.retry import retry_with_backoff, compute_delay, DEFAULT_RETRY_ON
 
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
@@ -62,7 +62,7 @@ class TestRetryWithBackoff:
 
     def test_success_on_first_try(self):
         """No retries needed if fn succeeds immediately."""
-        with patch("lensllm.retry.time.sleep") as mock_sleep:
+        with patch("undertow_llm.retry.time.sleep") as mock_sleep:
             fn = make_failing_fn(0, success_value="result")
             result = retry_with_backoff(fn, max_retries=3, jitter=False)
         assert result == "result"
@@ -71,7 +71,7 @@ class TestRetryWithBackoff:
 
     def test_success_after_one_retry(self):
         """fn fails once then succeeds — should succeed with 1 retry."""
-        with patch("lensllm.retry.time.sleep"):
+        with patch("undertow_llm.retry.time.sleep"):
             fn = make_failing_fn(1, exc_type=ConnectionError, success_value="ok")
             result = retry_with_backoff(
                 fn, max_retries=3, base_delay=1.0, jitter=False,
@@ -82,7 +82,7 @@ class TestRetryWithBackoff:
 
     def test_success_after_max_retries(self):
         """fn fails exactly max_retries times then succeeds."""
-        with patch("lensllm.retry.time.sleep"):
+        with patch("undertow_llm.retry.time.sleep"):
             fn = make_failing_fn(3, exc_type=ConnectionError, success_value="ok")
             result = retry_with_backoff(
                 fn, max_retries=3, base_delay=1.0, jitter=False,
@@ -93,7 +93,7 @@ class TestRetryWithBackoff:
 
     def test_raises_after_all_retries_exhausted(self):
         """fn fails more times than max_retries — last exception must be raised."""
-        with patch("lensllm.retry.time.sleep"):
+        with patch("undertow_llm.retry.time.sleep"):
             fn = make_failing_fn(10, exc_type=ConnectionError)
             with pytest.raises(ConnectionError, match="failure #3"):
                 # max_retries=2 → 1 initial call + 2 retries = 3 total calls
@@ -105,7 +105,7 @@ class TestRetryWithBackoff:
 
     def test_sleep_called_with_correct_delays(self):
         """Verify exponential backoff delays without jitter."""
-        with patch("lensllm.retry.time.sleep") as mock_sleep:
+        with patch("undertow_llm.retry.time.sleep") as mock_sleep:
             fn = make_failing_fn(3, exc_type=ConnectionError, success_value="ok")
             retry_with_backoff(
                 fn, max_retries=3, base_delay=1.0, max_delay=60.0, jitter=False,
@@ -119,7 +119,7 @@ class TestRetryWithBackoff:
 
     def test_non_retryable_exception_raises_immediately(self):
         """An exception NOT in retry_on must propagate without sleeping."""
-        with patch("lensllm.retry.time.sleep") as mock_sleep:
+        with patch("undertow_llm.retry.time.sleep") as mock_sleep:
             fn = make_failing_fn(1, exc_type=ValueError)
             with pytest.raises(ValueError):
                 retry_with_backoff(
@@ -130,7 +130,7 @@ class TestRetryWithBackoff:
 
     def test_custom_retry_on(self):
         """retry_on parameter should determine which exceptions trigger retry."""
-        with patch("lensllm.retry.time.sleep"):
+        with patch("undertow_llm.retry.time.sleep"):
             fn = make_failing_fn(2, exc_type=TimeoutError, success_value="done")
             result = retry_with_backoff(
                 fn, max_retries=3, retry_on=(TimeoutError,), jitter=False
@@ -147,7 +147,7 @@ class TestRetryWithBackoff:
                 raise ConnectionError("first fail")
             return "response"
 
-        with patch("lensllm.retry.time.sleep"):
+        with patch("undertow_llm.retry.time.sleep"):
             result = retry_with_backoff(
                 fn, args=("hello",), kwargs={"temperature": 0.5},
                 max_retries=2, jitter=False, retry_on=(ConnectionError,)
@@ -158,7 +158,7 @@ class TestRetryWithBackoff:
 
     def test_max_delay_respected(self):
         """Computed delay must never exceed max_delay."""
-        with patch("lensllm.retry.time.sleep") as mock_sleep:
+        with patch("undertow_llm.retry.time.sleep") as mock_sleep:
             fn = make_failing_fn(5, exc_type=ConnectionError, success_value="ok")
             retry_with_backoff(
                 fn, max_retries=5, base_delay=10.0, max_delay=15.0, jitter=False,

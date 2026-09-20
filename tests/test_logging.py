@@ -10,7 +10,7 @@ import time
 import uuid
 import pytest
 
-from lensllm.logging.store import LogStore, LogEntry
+from undertow_llm.logging.store import LogStore, LogEntry
 
 
 @pytest.fixture

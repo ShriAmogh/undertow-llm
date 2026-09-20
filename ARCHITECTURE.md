@@ -1,10 +1,10 @@
-# lensllm Architecture
+# undertow_llm Architecture
 
-This document provides a deep dive into the design and internal lifecycle of `lensllm`.
+This document provides a deep dive into the design and internal lifecycle of `undertow_llm`.
 
 ## Overview
 
-`lensllm` is a provider-agnostic LLM observability and reliability layer designed as a Python function decorator (`@track()`). Unlike traditional API proxies or gateway sidecars, `lensllm` operates directly within your application process, avoiding network overhead, complex proxy deployments, and provider-specific locking.
+`undertow_llm` is a provider-agnostic LLM observability and reliability layer designed as a Python function decorator (`@track()`). Unlike traditional API proxies or gateway sidecars, `undertow_llm` operates directly within your application process, avoiding network overhead, complex proxy deployments, and provider-specific locking.
 
 ```
 Your LLM Function
@@ -29,12 +29,12 @@ Your LLM Function
   │  └── Redis (distributed rate limiting & queues)           │
   └───────────────────────────────────────────────────────────┘
       │
-  FastAPI Dashboard (`lensllm serve`)
+  FastAPI Dashboard (`undertow-llm serve`)
 ```
 
 ## Core Components
 
-### 1. Decorator Lifecycle (`lensllm.decorator`)
+### 1. Decorator Lifecycle (`undertow_llm.decorator`)
 The `@track()` decorator wraps target function calls and executes an 8-stage lifecycle sequence:
 - **Policy Check**: Evaluates user-defined safety callbacks before execution.
 - **Cache Lookup**: Computes query embeddings (via SentenceTransformers `all-MiniLM-L6-v2`) and searches vector store for cosine similarity $\ge \text{threshold}$.
@@ -45,11 +45,11 @@ The `@track()` decorator wraps target function calls and executes an 8-stage lif
 - **Metric Logging**: Extracts token counts, latency, cost estimates, and traces.
 - **Async Persistence**: Asynchronously writes log entries and vector embeddings to storage.
 
-### 2. Storage Backend Factory (`lensllm.backends`)
-`lensllm` uses an abstract interface (`CacheBackend` and `MetricsStore`) with factory auto-discovery:
-- **SQLite (`SQLiteCacheBackend` / `SQLiteMetricsStore`)**: Zero-config storage storing SQLite vectors and log tables in `lensllm.db`.
-- **PostgreSQL (`PostgresCacheBackend` / `PostgresMetricsStore`)**: Uses `pgvector` extension for fast vector similarity search and relational analytics. Automatically activates when `LENSLLM_POSTGRES_URL` or `POSTGRES_URL` is configured.
-- **Redis Integration**: Uses Redis for distributed rate limit counters and queue locks when `LENSLLM_REDIS_URL` is set.
+### 2. Storage Backend Factory (`undertow_llm.backends`)
+`undertow_llm` uses an abstract interface (`CacheBackend` and `MetricsStore`) with factory auto-discovery:
+- **SQLite (`SQLiteCacheBackend` / `SQLiteMetricsStore`)**: Zero-config storage storing SQLite vectors and log tables in `undertow_llm.db`.
+- **PostgreSQL (`PostgresCacheBackend` / `PostgresMetricsStore`)**: Uses `pgvector` extension for fast vector similarity search and relational analytics. Automatically activates when `UNDERTOW_LLM_POSTGRES_URL` or `POSTGRES_URL` is configured.
+- **Redis Integration**: Uses Redis for distributed rate limit counters and queue locks when `UNDERTOW_LLM_REDIS_URL` is set.
 
-### 3. FastAPI Dashboard (`lensllm.server`)
-A lightweight FastAPI server (`lensllm serve`) serving a dynamic HTML5 dashboard with real-time Chart.js charts, log viewers, trace waterfalls, and canary analytics.
+### 3. FastAPI Dashboard (`undertow_llm.server`)
+A lightweight FastAPI server (`undertow-llm serve`) serving a dynamic HTML5 dashboard with real-time Chart.js charts, log viewers, trace waterfalls, and canary analytics.

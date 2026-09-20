@@ -6,7 +6,7 @@ Phase 1 tests: database schema creation and connection health.
 
 import sqlite3
 import pytest
-from lensllm.db import init_db, get_connection
+from undertow_llm.db import init_db, get_connection
 
 
 class TestDbSchema:

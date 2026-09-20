@@ -1,7 +1,7 @@
 """
 complete_testing.py
 ===================
-End-to-end integration test script for lensllm (Phases 1–4).
+End-to-end integration test script for undertow_llm (Phases 1–4).
 
 This script tests REAL components (no mocks) against a temporary SQLite DB,
 verifying the full call flow from @track() → embed → cache → retry → log.
@@ -26,9 +26,9 @@ import traceback
 
 # Ensure SQLite test isolation for standalone script execution
 os.environ.pop("POSTGRES_URL", None)
-os.environ.pop("LENSLLM_POSTGRES_URL", None)
-from lensllm import configure
-from lensllm.backends.factory import reset_backends
+os.environ.pop("UNDERTOW_LLM_POSTGRES_URL", None)
+from undertow_llm import configure
+from undertow_llm.backends.factory import reset_backends
 configure(postgres_url=None)
 reset_backends()
 from typing import Callable
@@ -49,7 +49,7 @@ except ImportError:
 
 # ── Ensure project root is on path ────────────────────────────────────────────
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-os.environ.setdefault("LENSLLM_DB_PATH", ":memory:")  # overridden per test
+os.environ.setdefault("UNDERTOW_LLM_DB_PATH", ":memory:")  # overridden per test
 
 # ── Terminal colours ──────────────────────────────────────────────────────────
 GREEN  = "\033[92m"
@@ -100,8 +100,8 @@ def make_temp_db() -> str:
 
 section("Phase 1 — Config & Database Schema")
 
-from lensllm.config import configure, get_config, GatewayConfig
-from lensllm.db import init_db, get_connection
+from undertow_llm.config import configure, get_config, GatewayConfig
+from undertow_llm.db import init_db, get_connection
 
 _db1 = make_temp_db()
 
@@ -178,10 +178,10 @@ run_test("Phase 1", "init_db() is idempotent", test_db_init_idempotent)
 section("Phase 2 — Semantic Cache, Logging & @track()")
 
 import numpy as np
-from lensllm.cache.semantic import embed, cosine_similarity, embedding_to_bytes, bytes_to_embedding
-from lensllm.cache.store import CacheStore
-from lensllm.logging.store import LogStore, LogEntry
-from lensllm import track
+from undertow_llm.cache.semantic import embed, cosine_similarity, embedding_to_bytes, bytes_to_embedding
+from undertow_llm.cache.store import CacheStore
+from undertow_llm.logging.store import LogStore, LogEntry
+from undertow_llm import track
 
 _db2 = make_temp_db()
 init_db(_db2)
@@ -328,8 +328,8 @@ run_test("Phase 2", "@track: exception logged and re-raised", test_decorator_err
 section("Phase 3 — Retry with Backoff + Fallback Chain")
 
 from unittest.mock import patch
-from lensllm.retry import retry_with_backoff, compute_delay
-from lensllm.fallback import FallbackChain
+from undertow_llm.retry import retry_with_backoff, compute_delay
+from undertow_llm.fallback import FallbackChain
 
 
 def test_retry_backoff_doubles():
@@ -361,7 +361,7 @@ def test_retry_success_after_failures():
             raise ConnectionError("transient")
         return "success"
 
-    with patch("lensllm.retry.time.sleep"):
+    with patch("undertow_llm.retry.time.sleep"):
         result = retry_with_backoff(
             flaky, args=("hello",), max_retries=3, jitter=False,
             retry_on=(ConnectionError,)
@@ -375,7 +375,7 @@ def test_retry_exhausted_raises():
     def always_fail(prompt):
         raise TimeoutError("always")
 
-    with patch("lensllm.retry.time.sleep"):
+    with patch("undertow_llm.retry.time.sleep"):
         try:
             retry_with_backoff(always_fail, args=("x",), max_retries=2,
                                retry_on=(TimeoutError,), jitter=False)
@@ -391,7 +391,7 @@ def test_retry_non_retryable_immediate():
         calls["n"] += 1
         raise ValueError("not retryable")
 
-    with patch("lensllm.retry.time.sleep") as mock_sleep:
+    with patch("undertow_llm.retry.time.sleep") as mock_sleep:
         try:
             retry_with_backoff(fn, args=("x",), max_retries=3,
                                retry_on=(ConnectionError,), jitter=False)
@@ -444,7 +444,7 @@ def test_decorator_retries_on_transient_failure():
             raise ConnectionError("transient")
         return "recovered"
 
-    with patch("lensllm.retry.time.sleep"):
+    with patch("undertow_llm.retry.time.sleep"):
         result = flaky_llm("test prompt")
     assert result == "recovered"
     assert calls["n"] == 3
@@ -463,7 +463,7 @@ def test_decorator_uses_fallback_on_primary_failure():
     def primary_llm(prompt: str) -> str:
         raise RuntimeError("primary down")
 
-    with patch("lensllm.retry.time.sleep"):
+    with patch("undertow_llm.retry.time.sleep"):
         result = primary_llm("test")
     assert result == "fallback_response"
 run_test("Phase 3", "@track: uses fallback when primary exhausts retries", test_decorator_uses_fallback_on_primary_failure)
@@ -475,8 +475,8 @@ run_test("Phase 3", "@track: uses fallback when primary exhausts retries", test_
 
 section("Phase 4 — Rate Limiter (Token Bucket) + Concurrency Queue")
 
-from lensllm.rate_limiter import TokenBucketLimiter, get_limiter
-from lensllm.queue import RequestQueue, get_queue
+from undertow_llm.rate_limiter import TokenBucketLimiter, get_limiter
+from undertow_llm.queue import RequestQueue, get_queue
 
 
 def test_bucket_starts_full():

@@ -9,16 +9,16 @@ import time
 import pytest
 import numpy as np
 
-from lensllm.backends.base import CacheEntry
-from lensllm.backends.sqlite_backend import SQLiteCacheBackend, SQLiteMetricsStore
-from lensllm.backends.factory import get_cache_backend, get_metrics_store, reset_backends
-from lensllm.logging.store import LogEntry
+from undertow_llm.backends.base import CacheEntry
+from undertow_llm.backends.sqlite_backend import SQLiteCacheBackend, SQLiteMetricsStore
+from undertow_llm.backends.factory import get_cache_backend, get_metrics_store, reset_backends
+from undertow_llm.logging.store import LogEntry
 
 
 @pytest.fixture
 def tmp_sqlite_db(tmp_path):
-    db_file = str(tmp_path / "test_lensllm.db")
-    from lensllm.db import init_db
+    db_file = str(tmp_path / "test_undertow_llm.db")
+    from undertow_llm.db import init_db
     init_db(db_file)
     return db_file
 
@@ -84,7 +84,7 @@ def test_sqlite_metrics_store(tmp_sqlite_db):
 def test_factory_backend_switching(monkeypatch):
     reset_backends()
     monkeypatch.delenv("POSTGRES_URL", raising=False)
-    monkeypatch.delenv("LENSLLM_POSTGRES_URL", raising=False)
+    monkeypatch.delenv("UNDERTOW_LLM_POSTGRES_URL", raising=False)
 
     cache = get_cache_backend()
     metrics = get_metrics_store()

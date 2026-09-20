@@ -1,11 +1,11 @@
 """
 tests/test_streaming.py
 =======================
-Unit tests for lensllm.streaming (Phase 5).
+Unit tests for undertow_llm.streaming (Phase 5).
 """
 import time
 import pytest
-from lensllm.streaming import is_generator, wrap_stream
+from undertow_llm.streaming import is_generator, wrap_stream
 
 
 # ── is_generator ─────────────────────────────────────────────────────────────

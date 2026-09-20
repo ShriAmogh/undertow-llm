@@ -22,9 +22,9 @@ load_dotenv()
 
 # Get PostgreSQL URL from environment or fallback to default Docker URL
 POSTGRES_URL = (
-    os.getenv("LENSLLM_POSTGRES_URL")
+    os.getenv("UNDERTOW_LLM_POSTGRES_URL")
     or os.getenv("POSTGRES_URL")
-    or "postgresql://lensllm:lensllm@localhost:5432/gateway"
+    or "postgresql://undertow_llm:undertow_llm@localhost:5432/gateway"
 )
 
 try:
@@ -34,8 +34,8 @@ try:
 except ImportError:
     PSYCOPG2_AVAILABLE = False
 
-from lensllm.backends.postgres_backend import PostgresMetricsStore, PostgresCacheBackend
-from lensllm.logging.store import LogEntry
+from undertow_llm.backends.postgres_backend import PostgresMetricsStore, PostgresCacheBackend
+from undertow_llm.logging.store import LogEntry
 
 
 def print_section(title: str):

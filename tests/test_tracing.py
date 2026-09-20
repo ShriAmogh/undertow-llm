@@ -1,11 +1,11 @@
 """
 tests/test_tracing.py
 =====================
-Unit tests for lensllm.tracing (Phase 7).
+Unit tests for undertow_llm.tracing (Phase 7).
 """
 import threading
 import pytest
-from lensllm.tracing import (
+from undertow_llm.tracing import (
     get_current_trace,
     set_current_trace,
     reset_current_trace,

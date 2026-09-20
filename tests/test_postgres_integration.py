@@ -11,14 +11,14 @@ import uuid
 import pytest
 import numpy as np
 
-from lensllm.backends.postgres_backend import PostgresCacheBackend, PostgresMetricsStore
-from lensllm.backends.factory import get_cache_backend, get_metrics_store, reset_backends
-from lensllm.logging.store import LogEntry
-from lensllm.decorator import track, get_last_call_info
+from undertow_llm.backends.postgres_backend import PostgresCacheBackend, PostgresMetricsStore
+from undertow_llm.backends.factory import get_cache_backend, get_metrics_store, reset_backends
+from undertow_llm.logging.store import LogEntry
+from undertow_llm.decorator import track, get_last_call_info
 
 POSTGRES_TEST_URL = os.getenv(
-    "LENSLLM_POSTGRES_URL",
-    "postgresql://lensllm:lensllm@localhost:5432/gateway"
+    "UNDERTOW_LLM_POSTGRES_URL",
+    "postgresql://undertow_llm:undertow_llm@localhost:5432/gateway"
 )
 
 
@@ -34,12 +34,12 @@ def postgres_client():
 
 @pytest.fixture
 def setup_postgres_env(postgres_client, monkeypatch):
-    monkeypatch.setenv("LENSLLM_POSTGRES_URL", POSTGRES_TEST_URL)
-    from lensllm.config import configure
+    monkeypatch.setenv("UNDERTOW_LLM_POSTGRES_URL", POSTGRES_TEST_URL)
+    from undertow_llm.config import configure
     configure(postgres_url=POSTGRES_TEST_URL)
     reset_backends()
     yield
-    monkeypatch.delenv("LENSLLM_POSTGRES_URL", raising=False)
+    monkeypatch.delenv("UNDERTOW_LLM_POSTGRES_URL", raising=False)
     monkeypatch.delenv("POSTGRES_URL", raising=False)
     configure(postgres_url=None)
     reset_backends()

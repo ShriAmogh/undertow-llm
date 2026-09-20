@@ -22,9 +22,9 @@ except ImportError:
     sys.exit(1)
 
 POSTGRES_URL = (
-    os.getenv("LENSLLM_POSTGRES_URL")
+    os.getenv("UNDERTOW_LLM_POSTGRES_URL")
     or os.getenv("POSTGRES_URL")
-    or "postgresql://lensllm:lensllm@localhost:5432/gateway"
+    or "postgresql://undertow_llm:undertow_llm@localhost:5432/gateway"
 )
 
 

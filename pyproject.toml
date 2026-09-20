@@ -8,7 +8,7 @@ version = "0.2.0"
 description = "Provider-agnostic LLM observability & reliability SDK — semantic caching, retries, rate limiting, cost tracking, and a local dashboard via a single @track() decorator."
 readme = "README.md"
 requires-python = ">=3.10"
-license = { text = "MIT" }
+license = "MIT"
 keywords = ["llm", "observability", "caching", "openai", "gemini", "anthropic", "sdk", "ai-infra"]
 authors = [{ name = "Amogh Arora" }]
 dependencies = [
@@ -49,8 +49,8 @@ dev = [
 gateway-sdk = "gateway_sdk.cli:main"
 
 [project.urls]
-Homepage = "https://github.com/amogharora/gateway-sdk"
-Repository = "https://github.com/amogharora/gateway-sdk"
+Homepage = "https://github.com/ShriAmogh/gateway-sdk"
+Repository = "https://github.com/ShriAmogh/gateway-sdk"
 
 [tool.setuptools.packages.find]
 where = ["."]

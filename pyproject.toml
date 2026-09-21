@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "undertow-llm"
-version = "0.2.5"
+version = "0.2.6"
 description = "LLM observability and resilience decorator — semantic prompt caching, automatic retries, rate limiting, cost tracking, and a local web dashboard for any Python LLM call."
 readme = "README.md"
 requires-python = ">=3.10"

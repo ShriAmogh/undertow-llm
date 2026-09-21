@@ -181,18 +181,18 @@ class RedisTokenBucketLimiter:
             tokens = tokens - 1.0
             redis.call("HMSET", key, "tokens", tokens, "last_refill", last_refill)
             redis.call("EXPIRE", key, 3600)
-            return {1, 0}
+            return {1, "0"}
         else
             redis.call("HMSET", key, "tokens", tokens, "last_refill", last_refill)
             redis.call("EXPIRE", key, 3600)
             local wait_time = (1.0 - tokens) / refill_rate
-            return {0, wait_time}
+            return {0, tostring(wait_time)}
         end
         """
-        now = time.time()
+        now = time.monotonic()
         try:
             res = self._client.eval(script, 1, self._key, self._max_tokens, self._rate, now)
-            allowed = bool(res[0])
+            allowed = int(res[0]) == 1
             wait_time = float(res[1])
 
             if allowed:
